@@ -1,3 +1,6 @@
+const API_KEY = 'ae2a4b49';
+const API_URL = 'https://www.omdbapi.com/';
+
 const movieInput = document.getElementById('movieInput');
 const searchBtn = document.getElementById('searchBtn');
 const resultsContainer = document.getElementById('results-container');
@@ -22,13 +25,7 @@ async function handleSearch() {
 
     try {
         const response = await fetch(
-            `https://www.omdbapi.com/?s=${encodeURIComponent(query)}&type=movie`,
-            {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            }
+            `${API_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&type=movie`
         );
 
         if (!response.ok) {
@@ -36,6 +33,7 @@ async function handleSearch() {
         }
 
         const data = await response.json();
+
         hideLoading();
 
         if (data.Response === 'False') {
