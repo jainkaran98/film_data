@@ -1,6 +1,3 @@
-const API_URL = 'https://www.omdbapi.com/';
-const API_KEY = 'ae2a4b49';
-
 const movieInput = document.getElementById('movieInput');
 const searchBtn = document.getElementById('searchBtn');
 const resultsContainer = document.getElementById('results-container');
@@ -24,9 +21,14 @@ async function handleSearch() {
     showLoading();
 
     try {
-        // Using TMDB as fallback - no auth required
         const response = await fetch(
-            `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&api_key=7d5f96b6c7bcdb6e9e52fbbfdbfdd7fe`
+            `https://www.omdbapi.com/?s=${encodeURIComponent(query)}&type=movie`,
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }
         );
 
         if (!response.ok) {
@@ -34,15 +36,14 @@ async function handleSearch() {
         }
 
         const data = await response.json();
-
         hideLoading();
 
-        if (!data.results || data.results.length === 0) {
-            showError('No movies found');
+        if (data.Response === 'False') {
+            showError(data.Error || 'No movies found');
             return;
         }
 
-        displayResults(data.results || []);
+        displayResults(data.Search || []);
     } catch (error) {
         hideLoading();
         showError('Failed to fetch movies. Please try again later.');
@@ -75,37 +76,38 @@ function createMovieCard(movie) {
     const card = document.createElement('div');
     card.className = 'movie-card';
 
-    const posterPath = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+    const imageUrl = movie.Poster !== 'N/A'
+        ? movie.Poster
         : 'https://via.placeholder.com/300x400?text=No+Image';
 
     const img = document.createElement('img');
-    img.src = posterPath;
-    img.alt = movie.title;
+    img.src = imageUrl;
+    img.alt = movie.Title;
     img.className = 'movie-image';
     img.loading = 'lazy';
+    img.onerror = () => {
+        img.src = 'https://via.placeholder.com/300x400?text=No+Image';
+    };
 
     const info = document.createElement('div');
     info.className = 'movie-info';
 
     const title = document.createElement('h3');
     title.className = 'movie-title';
-    title.textContent = movie.title;
+    title.textContent = movie.Title;
 
-    const releaseDate = movie.release_date || 'N/A';
     const year = document.createElement('p');
     year.className = 'movie-year';
     year.innerHTML = '<i class="fas fa-calendar"></i> ';
-    year.appendChild(document.createTextNode(releaseDate));
+    year.appendChild(document.createTextNode(movie.Year));
 
-    const rating = document.createElement('p');
-    rating.className = 'movie-description';
-    const ratingVal = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
-    rating.textContent = `Rating: ${ratingVal}/10`;
+    const type = document.createElement('p');
+    type.className = 'movie-description';
+    type.textContent = `Type: ${movie.Type}`;
 
     info.appendChild(title);
     info.appendChild(year);
-    info.appendChild(rating);
+    info.appendChild(type);
 
     card.appendChild(img);
     card.appendChild(info);
