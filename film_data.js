@@ -1,6 +1,3 @@
-const API_KEY = 'ae2a4b49';
-const API_URL = 'https://www.omdbapi.com/';
-
 const movieInput = document.getElementById('movieInput');
 const searchBtn = document.getElementById('searchBtn');
 const resultsContainer = document.getElementById('results-container');
@@ -24,8 +21,9 @@ async function handleSearch() {
     showLoading();
 
     try {
+        // Using TVMaze API - completely free, no authentication required
         const response = await fetch(
-            `${API_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&type=movie`
+            `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`
         );
 
         if (!response.ok) {
@@ -36,12 +34,12 @@ async function handleSearch() {
 
         hideLoading();
 
-        if (data.Response === 'False') {
-            showError(data.Error || 'No movies found');
+        if (!data || data.length === 0) {
+            showError('No movies found. Try a different search.');
             return;
         }
 
-        displayResults(data.Search || []);
+        displayResults(data);
     } catch (error) {
         hideLoading();
         showError('Failed to fetch movies. Please try again later.');
@@ -49,10 +47,10 @@ async function handleSearch() {
     }
 }
 
-function displayResults(movies) {
+function displayResults(results) {
     clearResults();
 
-    if (movies.length === 0) {
+    if (results.length === 0) {
         const noResults = document.createElement('div');
         noResults.className = 'no-results';
         noResults.style.gridColumn = '1 / -1';
@@ -64,23 +62,23 @@ function displayResults(movies) {
         return;
     }
 
-    movies.forEach((movie) => {
-        const card = createMovieCard(movie);
+    results.forEach((result) => {
+        const card = createMovieCard(result.show);
         resultsContainer.appendChild(card);
     });
 }
 
-function createMovieCard(movie) {
+function createMovieCard(show) {
     const card = document.createElement('div');
     card.className = 'movie-card';
 
-    const imageUrl = movie.Poster !== 'N/A'
-        ? movie.Poster
+    const imageUrl = show.image?.medium
+        ? show.image.medium
         : 'https://via.placeholder.com/300x400?text=No+Image';
 
     const img = document.createElement('img');
     img.src = imageUrl;
-    img.alt = movie.Title;
+    img.alt = show.name;
     img.className = 'movie-image';
     img.loading = 'lazy';
     img.onerror = () => {
@@ -92,20 +90,21 @@ function createMovieCard(movie) {
 
     const title = document.createElement('h3');
     title.className = 'movie-title';
-    title.textContent = movie.Title;
+    title.textContent = show.name;
 
-    const year = document.createElement('p');
-    year.className = 'movie-year';
-    year.innerHTML = '<i class="fas fa-calendar"></i> ';
-    year.appendChild(document.createTextNode(movie.Year));
+    const premiered = document.createElement('p');
+    premiered.className = 'movie-year';
+    premiered.innerHTML = '<i class="fas fa-calendar"></i> ';
+    premiered.appendChild(document.createTextNode(show.premiered || 'N/A'));
 
-    const type = document.createElement('p');
-    type.className = 'movie-description';
-    type.textContent = `Type: ${movie.Type}`;
+    const genre = document.createElement('p');
+    genre.className = 'movie-description';
+    const genres = show.genres?.length ? show.genres.join(', ') : 'N/A';
+    genre.textContent = `Genre: ${genres}`;
 
     info.appendChild(title);
-    info.appendChild(year);
-    info.appendChild(type);
+    info.appendChild(premiered);
+    info.appendChild(genre);
 
     card.appendChild(img);
     card.appendChild(info);
