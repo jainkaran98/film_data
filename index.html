@@ -1,92 +1,50 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <title>FilmData</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karma">
-    <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
-    <!--to include icons-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            background: linear-gradient(141deg, #000000, #353935);
-        }
-        
-        #leftbox {
-            float: left;
-            margin-top: 20;
-            width: 30%;
-            height: 455px;
-            margin-bottom: 30;
-        }
-        
-        #rightbox {
-            float: right;
-            margin-top: 20;
-            width: 70%;
-            height: 455px;
-            margin-bottom: 30;
-        }
-        
-        .button {
-            background-color: #E85A4F;
-            border: none;
-            color: black;
-            text-align: center;
-            font-size: 15px;
-            opacity: 1;
-            transition: 0.3s;
-            display: inline-block;
-            text-decoration: none;
-            cursor: pointer;
-            height: 30px;
-            width: 70px;
-            font-family: Karma;
-        }
-        
-        .button:hover {
-            opacity: 0.6
-        }
-    </style>
-
+    <title>FilmData - Movie Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karma:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 
-<body bgcolor="#0B0C10">
-    <h1 id="heading " style="color:#D8C3A5;margin-bottom:50;border-radius:10px; text-align:center;font-family: Karma;;background-color:#C3073F;font-size:50px;margin:40px; "><b>FilmData</b></h1>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title"><i class="fas fa-film"></i> FilmData</h1>
+            <p class="subtitle">Discover movies from around the world</p>
+        </header>
 
-    <div id="enter " style="padding-left:40px;margin-bottom: 20px; ">
+        <div class="search-section">
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="movieInput"
+                    class="search-input"
+                    placeholder="Enter movie name or title..."
+                    aria-label="Search for movies">
+                <button class="search-button" id="searchBtn" aria-label="Search">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </div>
 
+        <div id="results-container" class="results-container"></div>
 
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Searching for movies...</p>
+        </div>
 
-        <input class="input " style=" border-radius:20px;height:40;width:300;font-size:18;font-family:calibri; " type="text " placeholder="Enter Movie Name "></input>
-        <button class="button "><b>Search</b></button>
-
+        <div id="error-message" class="error-message hidden"></div>
     </div>
 
-    <!-- <div id="content ">
-        <div>
-            <div id="leftbox ">
-
-
-            </div>
-            <div id="rightbox "></div>
-        </div>
-        <br>
-        <br>
-
-    </div> -->
-
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js "></script>
-    <script src="film_data.js "></script>
-
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="film_data.js"></script>
 </body>
 
 </html>
