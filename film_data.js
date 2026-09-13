@@ -1,4 +1,4 @@
-const API_KEY = 'k_3pxoshah';
+const API_KEY = 'ae2a4b49';
 const API_URL = 'https://www.omdbapi.com/';
 
 const movieInput = document.getElementById('movieInput');
