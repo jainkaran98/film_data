@@ -1,5 +1,5 @@
-const API_KEY = 'ae2a4b49';
 const API_URL = 'https://www.omdbapi.com/';
+const API_KEY = 'ae2a4b49';
 
 const movieInput = document.getElementById('movieInput');
 const searchBtn = document.getElementById('searchBtn');
@@ -24,8 +24,9 @@ async function handleSearch() {
     showLoading();
 
     try {
+        // Using TMDB as fallback - no auth required
         const response = await fetch(
-            `${API_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&type=movie`
+            `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&api_key=7d5f96b6c7bcdb6e9e52fbbfdbfdd7fe`
         );
 
         if (!response.ok) {
@@ -36,12 +37,12 @@ async function handleSearch() {
 
         hideLoading();
 
-        if (data.Response === 'False') {
-            showError(data.Error || 'No movies found');
+        if (!data.results || data.results.length === 0) {
+            showError('No movies found');
             return;
         }
 
-        displayResults(data.Search || []);
+        displayResults(data.results || []);
     } catch (error) {
         hideLoading();
         showError('Failed to fetch movies. Please try again later.');
@@ -74,11 +75,13 @@ function createMovieCard(movie) {
     const card = document.createElement('div');
     card.className = 'movie-card';
 
-    const imageUrl = movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x400?text=No+Image';
+    const posterPath = movie.poster_path
+        ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+        : 'https://via.placeholder.com/300x400?text=No+Image';
 
     const img = document.createElement('img');
-    img.src = imageUrl;
-    img.alt = movie.Title;
+    img.src = posterPath;
+    img.alt = movie.title;
     img.className = 'movie-image';
     img.loading = 'lazy';
 
@@ -87,20 +90,22 @@ function createMovieCard(movie) {
 
     const title = document.createElement('h3');
     title.className = 'movie-title';
-    title.textContent = movie.Title;
+    title.textContent = movie.title;
 
+    const releaseDate = movie.release_date || 'N/A';
     const year = document.createElement('p');
     year.className = 'movie-year';
     year.innerHTML = '<i class="fas fa-calendar"></i> ';
-    year.appendChild(document.createTextNode(movie.Year));
+    year.appendChild(document.createTextNode(releaseDate));
 
-    const type = document.createElement('p');
-    type.className = 'movie-description';
-    type.textContent = `Type: ${movie.Type}`;
+    const rating = document.createElement('p');
+    rating.className = 'movie-description';
+    const ratingVal = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+    rating.textContent = `Rating: ${ratingVal}/10`;
 
     info.appendChild(title);
     info.appendChild(year);
-    info.appendChild(type);
+    info.appendChild(rating);
 
     card.appendChild(img);
     card.appendChild(info);
